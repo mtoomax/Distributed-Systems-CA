@@ -30,24 +30,42 @@
       h2 {
         margin-top: 0;
       }
+
+      .logout-btn {
+        background: #e74c3c;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+      }
     </style>
   </head>
 
+  <div style="text-align: right; margin-bottom: 20px;">
+    <form action="/logout" method="GET">
+      <button class="logout-btn">🚪 Logout</button>
+    </form>
+  </div>
+
   <body>
-    <% 
-      const safeTemperature = typeof temperature !== "undefined" ? temperature : null;
+    <%
+    const safeTemperature = typeof temperature !== "undefined" ? temperature :
+    null;
     %>
 
     <!-- Weather Section -->
     <div class="weather">
       <h2>🌤 gRPC Weather</h2>
       <form action="/fetch-weather" method="POST">
-        <input type="text" name="area" required placeholder="Enter area (e.g., Ballyfermot)" />
+        <input type="text" name="area" required
+          placeholder="Enter area (e.g., Ballyfermot)" />
         <button type="submit">Get Temperature</button>
       </form>
 
       <% if (safeTemperature !== null) { %>
-        <h3>🌡 Temperature: <%= safeTemperature %> °C</h3>
+      <h3>🌡 Temperature: <%= safeTemperature %> °C</h3>
       <% } %>
     </div>
   </body>
