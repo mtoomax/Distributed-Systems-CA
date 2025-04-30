@@ -1,0 +1,14 @@
+syntax = "proto3";
+package weather;
+
+service WeatherService {
+  rpc FetchWeather (WeatherRequest) returns (WeatherResponse);
+}
+
+message WeatherRequest { 
+  string area = 1; 
+} 
+
+message WeatherResponse { 
+  double temperature = 1; 
+} 

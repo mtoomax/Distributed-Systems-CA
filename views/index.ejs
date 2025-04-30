@@ -1,9 +1,7 @@
 <!DOCTYPE html>
-
 <html>
   <head>
     <title>gRPC Calculator</title>
-
     <style>
       body {
         font-family: sans-serif;
@@ -11,9 +9,10 @@
         background: #f8f8f8;
       }
 
-      .calculator {
+      .calculator,
+      .weather {
         max-width: 400px;
-        margin: auto;
+        margin: 30px auto;
         padding: 20px;
         background: #fff;
         border-radius: 8px;
@@ -27,47 +26,28 @@
         margin: 5px 0;
         width: 100%;
       }
+
+      h2 {
+        margin-top: 0;
+      }
     </style>
   </head>
 
   <body>
-    <div class="calculator">
-      <h2>🧮 gRPC Calculator</h2>
+    <% 
+      const safeTemperature = typeof temperature !== "undefined" ? temperature : null;
+    %>
 
-      <form action="/calculate" method="POST">
-        <input
-          type="number"
-          name="num1"
-          step="any"
-          required
-          placeholder="Enter first number"
-        />
-
-        <input
-          type="number"
-          name="num2"
-          step="any"
-          required
-          placeholder="Enter second number"
-        />
-
-        <select name="operation" required>
-          <option value="add">➕ Add</option>
-
-          <option value="subtract">➖ Subtract</option>
-
-          <option value="multiply">✖ Multiply</option>
-
-          <option value="divide">➗ Divide</option>
-        </select>
-
-        <button type="submit">Calculate</button>
+    <!-- Weather Section -->
+    <div class="weather">
+      <h2>🌤 gRPC Weather</h2>
+      <form action="/fetch-weather" method="POST">
+        <input type="text" name="area" required placeholder="Enter area (e.g., Ballyfermot)" />
+        <button type="submit">Get Temperature</button>
       </form>
 
-      <% if (result !== null) { %>
-
-      <h3>✅ Result: <%= result %></h3>
-
+      <% if (safeTemperature !== null) { %>
+        <h3>🌡 Temperature: <%= safeTemperature %> °C</h3>
       <% } %>
     </div>
   </body>
