@@ -2,7 +2,7 @@ const grpc = require("@grpc/grpc-js");
 const protoLoader = require("@grpc/proto-loader");
 const path = require("path");
 
-const PROTO_PATH = path.join(__dirname, "proto", "weather.proto");
+const PROTO_PATH = path.join(__dirname, "../proto", "weather.proto");
 const packageDef = protoLoader.loadSync(PROTO_PATH);
 const weatherProto = grpc.loadPackageDefinition(packageDef).weather;
 
@@ -77,6 +77,5 @@ server.bindAsync(
   grpc.ServerCredentials.createInsecure(),
   () => {
     console.log("✅ gRPC Weather Server running on port 50052");
-    server.start();
   }
 );

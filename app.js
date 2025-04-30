@@ -4,21 +4,11 @@ const grpc = require("@grpc/grpc-js");
 const protoLoader = require("@grpc/proto-loader");
 const path = require("path");
 
-// Path for the calculator.proto
-const PROTO_PATH_CALC = path.join(__dirname, "proto", "calculator.proto");
-const packageDefCalc = protoLoader.loadSync(PROTO_PATH_CALC);
-const calcProto = grpc.loadPackageDefinition(packageDefCalc).calculator;
-
 // Path for the weather.proto
 const PROTO_PATH_WEATHER = path.join(__dirname, "proto", "weather.proto");
 const packageDefWeather = protoLoader.loadSync(PROTO_PATH_WEATHER);
 const weatherProto = grpc.loadPackageDefinition(packageDefWeather).weather;
 
-// gRPC client for the Calculator service
-const clientCalc = new calcProto.CalculatorService(
-  "127.0.0.1:50051",
-  grpc.credentials.createInsecure()
-);
 
 // gRPC client for the Weather service
 const clientWeather = new weatherProto.WeatherService(
@@ -45,29 +35,6 @@ function logResponse(serviceName, method, response) {
 // Render the homepage with default null values
 app.get("/", (req, res) => {
   res.render("index", { result: null, temperature: null });
-});
-
-// POST route for calculator functionality
-app.post("/calculate", (req, res) => {
-  const { num1, num2, operation } = req.body;
-
-  // Log the request
-  logRequest("CalculatorService", "Calculate", { num1, num2, operation });
-
-  clientCalc.Calculate(
-    { num1: parseFloat(num1), num2: parseFloat(num2), operation },
-
-    (err, response) => {
-      if (err) {
-        return res.send("gRPC Error: " + err.message);
-      }
-
-      // Log the response
-      logResponse("CalculatorService", "Calculate", response);
-
-      res.render("index", { result: response.result, temperature: null });
-    }
-  );
 });
 
 // POST route for fetching weather based on area
