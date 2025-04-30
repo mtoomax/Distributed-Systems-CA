@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package watermeter;
+
+service WaterMeter {
+    rpc WaterMeterNow (WaterMeterRequest) returns (WaterMeterResponse);
+	rpc WaterMeterClient (stream WaterMeterRequest) returns ( WaterMeterResponse);
+	rpc WaterMeterBidirectional(stream WaterMeterRequest) returns (stream WaterMeterResponse);
+	
+}
+
+
+message WaterMeterRequest {
+	
+    float requestWaterMeter = 1;
+   
+}
+
+
+message WaterMeterResponse {
+	
+	string responseWaterMeter=1;
+  
+	
+}
