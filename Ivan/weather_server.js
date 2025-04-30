@@ -5,6 +5,7 @@ const path = require("path");
 const PROTO_PATH = path.join(__dirname, "../proto", "weather.proto");
 const packageDef = protoLoader.loadSync(PROTO_PATH);
 const weatherProto = grpc.loadPackageDefinition(packageDef).weather;
+const weatherData = require("./weather_data.js");
 
 // Function to log requests
 function logRequest(method, request) {
@@ -23,29 +24,6 @@ function fetchWeather(call, callback) {
   const { area } = call.request;
 
   logRequest("FetchWeather", call.request);  // Log the incoming request
-
-  const weatherData = {
-    "Dublin City Centre": 14.5,
-    "Temple Bar": 14.8,
-    "Rathmines": 15.2,
-    "Dundrum": 16.1,
-    "Ballsbridge": 15.6,
-    "Donnybrook": 15.0,
-    "Clontarf": 14.9,
-    "Drumcondra": 15.3,
-    "Phibsborough": 15.1,
-    "Howth": 13.8,
-    "Sandymount": 15.4,
-    "Malahide": 14.2,
-    "Blanchardstown": 16.0,
-    "Tallaght": 16.3,
-    "Lucan": 15.7,
-    "Swords": 14.7,
-    "Ballyfermot": 15.0,
-    "Cabra": 15.1,
-    "Coolock": 14.6,
-    "Artane": 14.5
-  };
 
   // Get the temperature based on the area
   const temperature = weatherData[area];
