@@ -1,0 +1,34 @@
+//RG (x23233681) code start
+syntax =  "proto3";
+
+package signal;
+
+//Services
+service SignalService{
+	rpc UpdateSignal(SignalUpdateRequest) returns (SignalResponse);//Unary
+	rpc GetSignal(SignalRequest) returns (SignalStatus);//Unary
+	rpc StreamSignal(SignalRequest) returns (stream SignalStatus);//Server Streaming
+}
+
+//Requests
+message SignalUpdateRequest{
+	string signal_id = 1;
+	string current_signal = 2;
+}
+
+message SignalRequest{
+	string signal_id = 1;
+}
+
+//Responses
+message SignalStatus{
+	string signal_id = 1;
+	string current_signal = 2;
+	string timestamp = 3;
+}
+
+message SignalResponse{
+	bool success = 1;
+	string message = 2;
+}
+//RG (x23233681) code end
