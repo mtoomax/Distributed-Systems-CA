@@ -1,5 +1,7 @@
 const express = require("express");
 const app = express();
+
+// Required libraries/Modules
 const grpc = require("@grpc/grpc-js");
 const protoLoader = require("@grpc/proto-loader");
 const path = require("path");
@@ -14,7 +16,7 @@ const clientWeather = new weatherProto.WeatherService(
   grpc.credentials.createInsecure()
 );
 
-// Import routes and middleware
+// Import authentication routes and middleware
 const { authRoutes, authenticateToken } = require("./routes/auth_routes");
 
 // Middleware
@@ -28,25 +30,35 @@ app.use(authRoutes);
 
 // Homepage route
 app.get("/", authenticateToken, (req, res) => {
-  res.render("index", { temperature: null });
+  res.render("index", { temperature: null, error: null });
 });
 
 // Weather fetch route
 app.post("/fetch-weather", authenticateToken, (req, res) => {
   const { area } = req.body;
 
-  console.log("[WeatherService] Incoming Request: FetchWeather");
+  console.log("[WeatherService] Outgoing Request: FetchWeather");
   console.log("Request Data:", { area });
 
   clientWeather.FetchWeather({ area }, (err, response) => {
-    if (err) return res.send("gRPC Error: " + err.message);
+    if (err) {
+      console.error("[WeatherService] gRPC Error:", err);
+      return res.render("index", {
+        temperature: null,
+        error: err.details || "An unexpected error occurred",
+      });
+    }
 
-    console.log("[WeatherService] Outgoing Response: FetchWeather");
+    console.log("[WeatherService] Incoming Response: FetchWeather");
     console.log("Response Data:", response);
 
-    res.render("index", { temperature: response.temperature });
+    res.render("index", {
+      temperature: response.temperature,
+      error: null,
+    });
   });
 });
+
 
 app.listen(3000, () => {
   console.log("🌐 GUI running at http://localhost:3000");

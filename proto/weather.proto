@@ -1,14 +1,17 @@
 syntax = "proto3";
 package weather;
 
+// The WeatherService provides weather information based on area name.
 service WeatherService {
   rpc FetchWeather (WeatherRequest) returns (WeatherResponse);
 }
 
+// Request containing an area to look up.
 message WeatherRequest { 
   string area = 1; 
 } 
 
+// Response containing the temperature for the given area.
 message WeatherResponse { 
-  double temperature = 1; 
-} 
+  double temperature = 1;
+}

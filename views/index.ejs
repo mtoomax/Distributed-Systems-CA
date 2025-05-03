@@ -50,17 +50,16 @@
     </style>
   </head>
 
-  <div style="text-align: right; margin-bottom: 20px;">
-    <form action="/logout" method="GET">
-      <button class="logout-btn">🚪 Logout</button>
-    </form>
-  </div>
-
   <body>
-    <%
-    const safeTemperature = typeof temperature !== "undefined" ? temperature :
-    null;
-    %>
+
+    <div style="text-align: right; margin-bottom: 20px;">
+      <form action="/logout" method="GET">
+        <button class="logout-btn">🚪 Logout</button>
+      </form>
+    </div>
+    
+    <% const safeTemperature = typeof temperature !== "undefined" ? temperature : null; %>
+    <% const safeError = typeof error !== "undefined" ? error : null; %>
 
     <!-- Weather Section -->
     <div class="weather">
@@ -74,6 +73,11 @@
       <% if (safeTemperature !== null) { %>
       <h3>🌡 Temperature: <%= safeTemperature %> °C</h3>
       <% } %>
+
+      <% if (safeError) { %>
+        <div style="color: red; margin-top: 10px;"><%= safeError %></div>
+      <% } %>
+
     </div>
   </body>
 </html>

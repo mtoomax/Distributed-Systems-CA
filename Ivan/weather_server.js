@@ -1,7 +1,9 @@
+// Require Libraries
 const grpc = require("@grpc/grpc-js");
 const protoLoader = require("@grpc/proto-loader");
 const path = require("path");
 
+// Initialize proto file path and load modules
 const PROTO_PATH = path.join(__dirname, "../proto", "weather.proto");
 const packageDef = protoLoader.loadSync(PROTO_PATH);
 const weatherProto = grpc.loadPackageDefinition(packageDef).weather;
@@ -28,32 +30,25 @@ function fetchWeather(call, callback) {
   // Get the temperature based on the area
   const temperature = weatherData[area];
 
-  let response;
-  if (temperature) {
-    response = { temperature: temperature };
+  if (temperature !== undefined) {
+    const response = { temperature };
+    logResponse("FetchWeather", response);  // Log the outgoing response
+    return callback(null, response);
   } else {
-    response = {
+    const error = {
       code: grpc.status.NOT_FOUND,
-      details: "Area not found"
+      message: "Area not found",
     };
+    logResponse("FetchWeather", error);  // Log the outgoing response
+    return callback(error, null);
   }
-
-  logResponse("FetchWeather", response);  // Log the outgoing response
-
-  callback(null, response);  // Send the response back to the client
 }
 
 const server = new grpc.Server();
 
 // Add the FetchWeather RPC to the server
-server.addService(weatherProto.WeatherService.service, {
-  FetchWeather: fetchWeather,
-});
+server.addService(weatherProto.WeatherService.service, { FetchWeather: fetchWeather});
 
-server.bindAsync(
-  "0.0.0.0:50052",
-  grpc.ServerCredentials.createInsecure(),
-  () => {
-    console.log("✅ gRPC Weather Server running on port 50052");
-  }
+server.bindAsync( "0.0.0.0:50052", grpc.ServerCredentials.createInsecure(),
+  () => { console.log("✅ gRPC Weather Server running on port 50052"); }
 );
