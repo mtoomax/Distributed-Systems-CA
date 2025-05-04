@@ -9,7 +9,7 @@ const signalProto = grpc.loadPackageDefinition(packageDefinition).signal;
 
 //Create gRPC client
 const client= new signalProto.SignalService(
-	'localhost:50051',
+	'localhost:50053',
 	grpc.credentials.createInsecure()
 );
 
