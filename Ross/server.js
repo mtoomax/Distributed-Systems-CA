@@ -2,6 +2,9 @@
 const grpc = require("@grpc/grpc-js");
 const protoLoader = require("@grpc/proto-loader");
 
+//Adding API key
+const VALID_API_KEY = "my-key";
+
 // Load the .proto file
 const PROTO_PATH = 'signal.proto';
 const packageDefinition = protoLoader.loadSync(PROTO_PATH);
@@ -10,9 +13,17 @@ const signalProto = grpc.loadPackageDefinition(packageDefinition).signal;
 //Signal Store in memory
 const signals = {};
 
+function isAuthorized(call){
+	const key=call.metadata.get('api-key');
+	return key.length>0&&key[0]===VALID_API_KEY;
+}
+
 //Implement Signal Service
 const signalService = {
 	UpdateSignal:(call, callback)=>{
+		if(!isAuthorized(call)){
+			return callback({code:grpc.status.UNAUTHENTICATED, message:"invalid API key"});
+		}
 		const { signalId, currentSignal }=call.request;
 		const timestamp=new Date().toISOString();
 
@@ -27,6 +38,9 @@ const signalService = {
 	},
 
 	GetSignal:(call, callback)=>{
+		if(!isAuthorized(call)){
+			return callback({code:grpc.status.UNAUTHENTICATED, message:"invalid API key"});
+		}
 		const{ signalId }= call.request;
 
 		if(signals[signalId]){
@@ -45,6 +59,10 @@ const signalService = {
 	},
 
 	StreamSignal: (call)=>{
+		if (!isAuthorized(call)){
+			call.destroy(new Error("Invalid API key"));
+			return;
+		}
 		const{ signalId }=call.request;
 
 		if(!signals[signalId]){
