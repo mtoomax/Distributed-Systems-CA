@@ -13,9 +13,17 @@ const client= new signalProto.SignalService(
 	grpc.credentials.createInsecure()
 );
 
+//API key
+function getMetadata(){
+	const metadata=new grpc.Metadata();
+	metadata.add('api-key', 'my-key');
+	return metadata;
+}
+
 //Update Signal Function
 function updateSignal(signalId, currentSignal){
-	client.UpdateSignal({ signalId, currentSignal }, (err, response)=>{
+	const metadata=getMetadata();
+	client.UpdateSignal({ signalId, currentSignal }, metadata, (err, response)=>{
 		if(err){
 			console.error('Signal Update Error:', err.message);
 		}else{
@@ -33,7 +41,8 @@ function updateSignal(signalId, currentSignal){
 
 //Get Signal Function
 function getSignal(signalId){
-	client.GetSignal({signalId}, (err,response)=>{
+	const metadata=getMetadata();
+	client.GetSignal({signalId}, metadata, (err,response)=>{
 		if(err){
 			console.error('Signal Error:', err.message);
 		}else{
@@ -45,7 +54,8 @@ function getSignal(signalId){
 
 //Stream Signal Function
 function streamSignal(signalId){
-	const call=client.StreamSignal({signalId});
+	const metadata=getMetadata();
+	const call=client.StreamSignal({signalId}, metadata);
 	call.on('data', (signalStatus)=>{
 		console.log('Streaming Update:', signalStatus);		
 	});
