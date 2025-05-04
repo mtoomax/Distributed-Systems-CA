@@ -4,7 +4,7 @@ const protoLoader = require("@grpc/proto-loader");
 const path = require("path");
 
 // Initialize proto file path and load modules
-const PROTO_PATH = path.join(__dirname, "../proto", "weather.proto");
+const PROTO_PATH = path.join(__dirname, "weather.proto");
 const packageDef = protoLoader.loadSync(PROTO_PATH);
 const weatherProto = grpc.loadPackageDefinition(packageDef).weather;
 const weatherData = require("./weather_data.js");

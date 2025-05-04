@@ -8,7 +8,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 
 // Proto setup
-const PROTO_PATH_WEATHER = path.join(__dirname, "proto", "weather.proto");
+const PROTO_PATH_WEATHER = path.join(__dirname, "weather.proto");
 const packageDefWeather = protoLoader.loadSync(PROTO_PATH_WEATHER);
 const weatherProto = grpc.loadPackageDefinition(packageDefWeather).weather;
 const clientWeather = new weatherProto.WeatherService(
@@ -17,11 +17,11 @@ const clientWeather = new weatherProto.WeatherService(
 );
 
 // Import authentication routes and middleware
-const { authRoutes, authenticateToken } = require("./routes/auth_routes");
+const { authRoutes, authenticateToken } = require("../routes/auth_routes");
 
 // Middleware
 app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views"));
+app.set("views", path.join(__dirname, "../views"));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
@@ -72,15 +72,19 @@ app.get("/stream-temperature-sse", authenticateToken, (req, res) => {
 
   call.on("data", (response) => {
     res.write(`data: ${JSON.stringify(response)}\n\n`);
+    console.log("[WeatherService] Incoming Response: StreamTemperature");
+    console.log("Response Data:", response);
   });
 
   call.on("error", (err) => {
     res.write(`event: error\ndata: ${JSON.stringify({ error: err.details })}\n\n`);
+    console.error("[WeatherService] gRPC Error:", err);
     res.end();
   });
 
   call.on("end", () => {
     res.write("event: end\ndata: Stream ended\n\n");
+    console.log("[WeatherService] Stream ended");
     res.end();
   });
 });
