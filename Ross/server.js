@@ -69,8 +69,8 @@ const signalService = {
 
 const server = new grpc.Server();
 server.addService(signalProto.SignalService.service, signalService);
-server.bindAsync("0.0.0.0:50051", grpc.ServerCredentials.createInsecure(), () => {
-    console.log("Signal Service is running on port 50051...");
+server.bindAsync("0.0.0.0:50053", grpc.ServerCredentials.createInsecure(), () => {
+    console.log("Signal Service is running on port 50053...");
 });
 
 
