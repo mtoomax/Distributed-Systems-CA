@@ -9,7 +9,6 @@
         background: #f8f8f8;
       }
 
-      .calculator,
       .weather {
         max-width: 400px;
         margin: 30px auto;
@@ -47,6 +46,13 @@
       font-weight: bold;
       width: auto;
     }
+
+    #live-temperature {
+    transition: opacity 0.3s ease;
+    color: #3498db;
+    font-size: 1.5em;
+    font-weight: bold;
+  }
     </style>
   </head>
 
@@ -57,18 +63,23 @@
         <button class="logout-btn">🚪 Logout</button>
       </form>
     </div>
-    
+
     <% const safeTemperature = typeof temperature !== "undefined" ? temperature : null; %>
     <% const safeError = typeof error !== "undefined" ? error : null; %>
 
     <!-- Weather Section -->
     <div class="weather">
       <h2>🌤 gRPC Weather</h2>
-      <form action="/fetch-weather" method="POST">
+      <form action="/fetch-temperature" method="POST">
         <input type="text" name="area" required
           placeholder="Enter area (e.g., Ballyfermot)" />
         <button type="submit">Get Temperature</button>
       </form>
+
+      <h2>📡 Live Temperature Stream</h2>
+      <input type="text" id="stream-area" placeholder="Enter area (e.g., Ballyfermot)" />
+      <button onclick="startStreaming()">Start Live Stream</button>
+      <h3 id="live-temperature" style="margin-top: 15px;"></h3>
 
       <% if (safeTemperature !== null) { %>
       <h3>🌡 Temperature: <%= safeTemperature %> °C</h3>
@@ -80,4 +91,41 @@
 
     </div>
   </body>
+
+  <script>
+    let eventSource;
+  
+    function startStreaming() {
+      const area = document.getElementById("stream-area").value;
+      const tempDisplay = document.getElementById("live-temperature");
+  
+      if (eventSource) {
+        eventSource.close(); // Close any existing stream
+      }
+  
+      eventSource = new EventSource(`/stream-temperature-sse?area=${encodeURIComponent(area)}`);
+  
+      eventSource.onmessage = function (event) {
+        const { temperature } = JSON.parse(event.data);
+  
+        // Flicker effect
+        tempDisplay.style.opacity = 0;
+        setTimeout(() => {
+          tempDisplay.textContent = `🌡 Live Temp: ${temperature.toFixed(2)} °C`;
+          tempDisplay.style.opacity = 1;
+        }, 200);
+      };
+  
+      eventSource.addEventListener("error", (event) => {
+        tempDisplay.textContent = "❌ Error: " + JSON.parse(event.data).error;
+        eventSource.close();
+      });
+  
+      eventSource.addEventListener("end", () => {
+        tempDisplay.textContent += " ✅ Stream complete.";
+        eventSource.close();
+      });
+    }
+  </script>
+  
 </html>

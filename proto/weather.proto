@@ -3,7 +3,8 @@ package weather;
 
 // The WeatherService provides weather information based on area name.
 service WeatherService {
-  rpc FetchWeather (WeatherRequest) returns (WeatherResponse);
+  rpc FetchTemperature (WeatherRequest) returns (WeatherResponse);
+  rpc StreamTemperature (WeatherRequest) returns (stream WeatherResponse);
 }
 
 // Request containing an area to look up.

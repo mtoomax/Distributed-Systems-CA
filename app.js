@@ -34,13 +34,13 @@ app.get("/", authenticateToken, (req, res) => {
 });
 
 // Weather fetch route
-app.post("/fetch-weather", authenticateToken, (req, res) => {
+app.post("/fetch-temperature", authenticateToken, (req, res) => {
   const { area } = req.body;
 
-  console.log("[WeatherService] Outgoing Request: FetchWeather");
+  console.log("[WeatherService] Outgoing Request: FetchTemperature");
   console.log("Request Data:", { area });
 
-  clientWeather.FetchWeather({ area }, (err, response) => {
+  clientWeather.FetchTemperature({ area }, (err, response) => {
     if (err) {
       console.error("[WeatherService] gRPC Error:", err);
       return res.render("index", {
@@ -49,7 +49,7 @@ app.post("/fetch-weather", authenticateToken, (req, res) => {
       });
     }
 
-    console.log("[WeatherService] Incoming Response: FetchWeather");
+    console.log("[WeatherService] Incoming Response: FetchTemperature");
     console.log("Response Data:", response);
 
     res.render("index", {
@@ -58,6 +58,34 @@ app.post("/fetch-weather", authenticateToken, (req, res) => {
     });
   });
 });
+
+// Stream temperature route
+app.get("/stream-temperature-sse", authenticateToken, (req, res) => {
+  const { area } = req.query;
+
+  // Set headers for SSE
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+
+  const call = clientWeather.StreamTemperature({ area });
+
+  call.on("data", (response) => {
+    res.write(`data: ${JSON.stringify(response)}\n\n`);
+  });
+
+  call.on("error", (err) => {
+    res.write(`event: error\ndata: ${JSON.stringify({ error: err.details })}\n\n`);
+    res.end();
+  });
+
+  call.on("end", () => {
+    res.write("event: end\ndata: Stream ended\n\n");
+    res.end();
+  });
+});
+
+
 
 
 app.listen(3000, () => {
