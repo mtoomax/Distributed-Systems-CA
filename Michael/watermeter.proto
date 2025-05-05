@@ -1,0 +1,43 @@
+syntax = "proto3"; //defines the protocal framework
+
+package watermeter; // the package for watermeter
+
+service WaterMeter {  //a collection of methods called WaterMeter
+
+    rpc WaterMeterNow (WaterMeterRequest) returns (WaterMeterResponse); //Unary Remote Procedure Call, one rquest, one response
+	rpc AverageWaterMeterFlow (stream WaterMeterRequest) returns ( WaterMeterResponse); //client stream, gets the average flow for a period of time
+	rpc LiveWaterMeterFlow (stream WaterMeterRequest) returns (stream WaterMeterResponse); //bi-directional, messages sent between the client and server over a set amount if time
+	rpc SoftwareUpdates(AllSensors) returns (stream Software);
+	rpc DiscoverWaterMeter (DeviceRequest) returns (DeviceResponse); 
+	
+}
+message WaterMeterRequest { //message, an input for the RPC methods
+	
+    float requestWaterMeter = 1; //a floating point number, with 1 for serialisation
+	  
+}
+
+
+message WaterMeterResponse {  //answers the clients requests
+	
+	string responseWaterMeter = 1; //a string with serialisation one 
+  
+	
+}
+message DeviceRequest { //message, an input for the RPC methods
+	
+    string requestDevice = 1; //a string, with 1 for serialisation
+	 
+}
+message DeviceResponse{
+
+	string responseFromDevice = 1; //a string, with 1 for serialisation
+
+}
+
+message AllSensors {}
+
+
+message Software {
+  string packets = 1;
+}
