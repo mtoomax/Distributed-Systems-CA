@@ -3,7 +3,7 @@ syntax =  "proto3";
 
 package signal;
 
-//Services
+// 3 Services
 service SignalService{
 	rpc UpdateSignal(SignalUpdateRequest) returns (SignalResponse);//Unary
 	rpc GetSignal(SignalRequest) returns (SignalStatus);//Unary
