@@ -18,19 +18,27 @@ const clientWeather = new weatherProto.WeatherService(
 
 // Import authentication routes and middleware
 const { authRoutes, authenticateToken } = require("../routes/auth_routes");
+const signalRoutes = require("../routes/signalRoutes");
 
 // Middleware
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "../views"));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(signalRoutes);
 
 // Use the extracted auth routes
 app.use(authRoutes);
 
 // Homepage route
+// Homepage route
 app.get("/", authenticateToken, (req, res) => {
-  res.render("index", { temperature: null, error: null });
+  res.render("index", { 
+	temperature: null, 
+	signalStatus: null,
+	success: null,
+	error: null 
+	});
 });
 
 // Weather fetch route
