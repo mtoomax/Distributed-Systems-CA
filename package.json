@@ -1,18 +1,27 @@
 {
-  "name": "grpc-gui-calculator",
+  "name": "distributed-systems-ca-main",
   "version": "1.0.0",
-  "main": "server.js",
+  "description": "",
+  "main": "auth.js",
   "scripts": {
-    "start:server": "node server.js",
-    "start:app": "node app.js"
+    "start": "concurrently \"node Ross/server.js\" \"node Ivan/app.js\"",
+    "dev": "nodemon Ivan/app.js"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "@grpc/grpc-js": "^1.8.14",
-    "@grpc/proto-loader": "^0.7.5",
+    "@grpc/grpc-js": "^1.13.3",
+    "@grpc/proto-loader": "^0.7.15",
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
-    "ejs": "^3.1.9",
-    "express": "^4.18.2",
-    "jsonwebtoken": "^9.0.2"
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "nodemon": "^3.1.10"
   }
 }
