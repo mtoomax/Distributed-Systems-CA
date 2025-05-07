@@ -4,8 +4,7 @@
   "description": "",
   "main": "auth.js",
   "scripts": {
-    "start": "concurrently \"node Ross/server.js\" \"node Ivan/app.js\"",
-    "dev": "nodemon Ivan/app.js"
+    "start": "concurrently \"node Ross/server.js\" \"node Ivan/app.js\""
   },
   "keywords": [],
   "author": "",
