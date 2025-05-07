@@ -1,12 +1,14 @@
 //RG (x23233681) code start
 const grpc = require("@grpc/grpc-js");
 const protoLoader = require("@grpc/proto-loader");
+const logger = require('./logger');
 
 //Adding API key
 const VALID_API_KEY = "my-key";
 
 // Load the .proto file
-const PROTO_PATH = 'signal.proto';
+const path = require("path");
+const PROTO_PATH = path.join(__dirname, "signal.proto");
 const packageDefinition = protoLoader.loadSync(PROTO_PATH);
 const signalProto = grpc.loadPackageDefinition(packageDefinition).signal;
 
@@ -33,7 +35,7 @@ const signalService = {
 			timestamp: timestamp,
 		};
 
-		console.log(`Signal updated: ${signalId}->${currentSignal}`);
+		logger.info(`Signal updated: ${signalId}->${currentSignal}`);
 		callback(null, {success:true, message:"Signal updated successfully"});
 	},
 
@@ -88,7 +90,7 @@ const signalService = {
 const server = new grpc.Server();
 server.addService(signalProto.SignalService.service, signalService);
 server.bindAsync("0.0.0.0:50053", grpc.ServerCredentials.createInsecure(), () => {
-    console.log("Signal Service is running on port 50053...");
+    logger.info("Signal Service is running on port 50053...");
 });
 
 
