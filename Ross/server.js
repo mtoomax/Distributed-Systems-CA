@@ -13,7 +13,33 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH);
 const signalProto = grpc.loadPackageDefinition(packageDefinition).signal;
 
 //Signal Store in memory
-const signals = {};
+const signals = {
+	"Junction 1":{
+		signalId: "Junction 1",
+		currentSignal: "Red",
+		timestamp: new Date().toISOString()
+	},
+	"Junction 2":{
+		signalId: "Junction 2",
+		currentSignal: "Red",
+		timestamp: new Date().toISOString()
+	},
+	"Junction 3":{
+		signalId: "Junction 3",
+		currentSignal: "Red",
+		timestamp: new Date().toISOString()
+	},
+	"Junction 4":{
+		signalId: "Junction 4",
+		currentSignal: "Green",
+		timestamp: new Date().toISOString()
+	},
+	"Junction 5":{
+		signalId: "Junction 5",
+		currentSignal: "Green",
+		timestamp: new Date().toISOString()
+	}
+};
 
 function isAuthorized(call){
 	const key=call.metadata.get('api-key');
