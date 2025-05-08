@@ -90,16 +90,16 @@
       <% } %>
 
     </div>
-<!--Start RG code-->
+	<!--Start RG code-->
 	<!--Signal Section-->
 	<div class="weather">
 		<h2>Traffic Signal Status</H2>
 		<form action="/fetch-signal" method="POST">
-			<input type="text" name="signalId" placeholder="Enter Junction ID e.g. Junction 5" required/>
+			<input type="text" name="signalId" placeholder="Enter Junction ID from 1 to 5 (e.g.'Junction 5')" required/>
 			<button type="submit">Get Signal</button>
 		</form>
-		<h3>Stream Signal</h3>
-		<input type="text" id="stream-signal-id" placeholder="Enter Junction ID"/>
+		<h3>Stream Live Traffic Signal</h3>
+		<input type="text" id="stream-signal-id" placeholder="Enter Junction ID from 1 to 5"/>
 		<button onclick="startSignalStream()">Start Streaming</button>
 		<h3 id="live-signal" style="margin-top:10px; color:black; font-weight:bold;"></h3>
 		<% if (signalStatus) { %>
@@ -111,9 +111,9 @@
 		<%if (success){%>
 			<div style="color: green; margin-top 10px;"><%= success %></div>
 		<% } %>
-		<h3>Update Signal</h3>
+		<h3>Update Traffic Signal</h3>
 		<form action="/update-signal" method="POST">
-			<input type="text" name="signalId" placeholder="Junction ID" required/>
+			<input type="text" name="signalId" placeholder="Enter Junction ID from 1 to 5" required/>
 			<select name="currentSignal" required>
 				<option value="">Select Signal</option>
 				<option value="Red">Red</option>
@@ -160,7 +160,8 @@
         eventSource.close();
       });
     }
-  //Start RG code
+
+	//Start RG code
 	let signalEventSource;
 	function startSignalStream(){
 		const signalId=document.getElementById("stream-signal-id").value;
