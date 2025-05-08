@@ -1,7 +1,7 @@
 //RG (x23233681) code start
 const grpc = require("@grpc/grpc-js");
 const protoLoader = require("@grpc/proto-loader");
-const logger = require('./logger');
+const logger = require('./logger');//Winston based logger
 
 //Adding API key
 const VALID_API_KEY = "my-key";
@@ -12,7 +12,7 @@ const PROTO_PATH = path.join(__dirname, "signal.proto");
 const packageDefinition = protoLoader.loadSync(PROTO_PATH);
 const signalProto = grpc.loadPackageDefinition(packageDefinition).signal;
 
-//Signal Store in memory
+//Mock Data
 const signals = {
 	"Junction 1":{
 		signalId: "Junction 1",
@@ -40,7 +40,7 @@ const signals = {
 		timestamp: new Date().toISOString()
 	}
 };
-
+//Validate API key
 function isAuthorized(call){
 	const key=call.metadata.get('api-key');
 	return key.length>0&&key[0]===VALID_API_KEY;
@@ -49,8 +49,8 @@ function isAuthorized(call){
 //Implement Signal Service
 const signalService = {
 	UpdateSignal:(call, callback)=>{
-		if(!isAuthorized(call)){
-			return callback({code:grpc.status.UNAUTHENTICATED, message:"invalid API key"});
+		if(!isAuthorized(call)){//Handle updates
+			return callback({code:grpc.status.UNAUTHENTICATED, message:"invalid API key"});//Reject unauthorised access
 		}
 		const { signalId, currentSignal }=call.request;
 		const timestamp=new Date().toISOString();
@@ -60,12 +60,12 @@ const signalService = {
 			currentSignal: currentSignal,
 			timestamp: timestamp,
 		};
-
+		//log update
 		logger.info(`Signal updated: ${signalId}->${currentSignal}`);
-		callback(null, {success:true, message:"Signal updated successfully"});
+		callback(null, {success:true, message:"Signal updated successfully"});//return response
 	},
 
-	GetSignal:(call, callback)=>{
+	GetSignal:(call, callback)=>{//return current junction signal
 		if(!isAuthorized(call)){
 			return callback({code:grpc.status.UNAUTHENTICATED, message:"invalid API key"});
 		}
@@ -86,7 +86,7 @@ const signalService = {
 
 	},
 
-	StreamSignal: (call)=>{
+	StreamSignal: (call)=>{//Stream junction signal status eevry 5s
 		if (!isAuthorized(call)){
 			call.destroy(new Error("Invalid API key"));
 			return;
@@ -98,7 +98,7 @@ const signalService = {
 			return;
 		}
 
-//Status updated every 5s
+	//Status updated every 5s
 	const intervalId=setInterval(()=>{
 		call.write({
 			signalId: signals[signalId].signalId,
@@ -106,18 +106,16 @@ const signalService = {
 			timestamp: new Date().toISOString(),
 		});
 	}, 5000);
-
+	//If client disconnects
 	call.on('cancelled', ()=>{
 		clearInterval(intervalId);
 	});
 	},
 };
-
+//start gRPC server and bind port 50053
 const server = new grpc.Server();
 server.addService(signalProto.SignalService.service, signalService);
 server.bindAsync("0.0.0.0:50053", grpc.ServerCredentials.createInsecure(), () => {
     logger.info("Signal Service is running on port 50053...");
 });
-
-
 //RG (x23233681) code end
