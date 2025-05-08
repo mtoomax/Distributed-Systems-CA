@@ -15,24 +15,24 @@ const client= new signalProto.SignalService(
 
 //API key
 function getMetadata(){
-	const metadata=new grpc.Metadata();
-	metadata.add('api-key', 'my-key');
-	return metadata;
+	const metadata=new grpc.Metadata();//new metadata object
+	metadata.add('api-key', 'my-key');//adding api key to metadata
+	return metadata;//return metadata
 }
 
 //Update Signal Function
 function updateSignal(signalId, currentSignal){
-	const metadata=getMetadata();
+	const metadata=getMetadata();//API request
 	client.UpdateSignal({ signalId, currentSignal }, metadata, (err, response)=>{
 		if(err){
-			console.error('Signal Update Error:', err.message);
+			console.error('Signal Update Error:', err.message);//log error
 		}else{
-			console.log('Update:', response);
+			console.log('Update:', response);//log reponse
 			setTimeout(()=>{
-				getSignal(signalId);
+				getSignal(signalId);//update signal after 1s
 			}, 1000);
 			setTimeout(()=>{
-				streamSignal(signalId);
+				streamSignal(signalId);//stream signal after 2s
 			}, 2000);
 
 		}
@@ -41,12 +41,12 @@ function updateSignal(signalId, currentSignal){
 
 //Get Signal Function
 function getSignal(signalId){
-	const metadata=getMetadata();
+	const metadata=getMetadata();//API request
 	client.GetSignal({signalId}, metadata, (err,response)=>{
 		if(err){
-			console.error('Signal Error:', err.message);
+			console.error('Signal Error:', err.message);//log error
 		}else{
-			console.log('Signal Status:', response);
+			console.log('Signal Status:', response);//log response
 		}
 	});
 
@@ -54,16 +54,16 @@ function getSignal(signalId){
 
 //Stream Signal Function
 function streamSignal(signalId){
-	const metadata=getMetadata();
-	const call=client.StreamSignal({signalId}, metadata);
+	const metadata=getMetadata();//API request
+	const call=client.StreamSignal({signalId}, metadata);//Streaming RPC call
 	call.on('data', (signalStatus)=>{
-		console.log('Streaming Update:', signalStatus);		
+		console.log('Streaming Update:', signalStatus);//log streaming status	
 	});
 	call.on('error', (err)=>{
-		console.error('Stream error:', err.message);
+		console.error('Stream error:', err.message);//log error
 	});
 	call.on('end', ()=>{
-		console.log('Stream ended.');
+		console.log('Stream ended.');//log stream end
 	});
 
 }
