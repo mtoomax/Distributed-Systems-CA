@@ -9,7 +9,7 @@
         background: #f8f8f8;
       }
 
-      .weather {
+      .weather, .traffic-signal {
         max-width: 400px;
         margin: 30px auto;
         padding: 20px;
@@ -57,7 +57,7 @@
   </head>
 
   <body>
-
+   	<!--Start Ivan code-->
     <div style="text-align: right; margin-bottom: 20px;">
       <form action="/logout" method="GET">
         <button class="logout-btn">🚪 Logout</button>
@@ -88,11 +88,16 @@
       <% if (safeError) { %>
         <div style="color: red; margin-top: 10px;"><%= safeError %></div>
       <% } %>
-
+      	<!--End Ivan code-->
     </div>
+
 	<!--Start RG code-->
 	<!--Signal Section-->
-	<div class="weather">
+
+  <% const signalConst = typeof signalStatus !== "undefined" ? signalStatus : null; %>
+  <% const successConst = typeof success !== "undefined" ? success : null; %>
+
+	<div class="traffic-signal">
 		<h2>Traffic Signal Status</H2>
 		<!--Fetch signal status form with input field and submit button-->
 		<form action="/fetch-signal" method="POST">
@@ -105,14 +110,14 @@
 		<button onclick="startSignalStream()">Start Streaming</button>
 		<!--Signal response display using conditional cases-->
 		<h3 id="live-signal" style="margin-top:10px; color:black; font-weight:bold;"></h3>
-		<% if (signalStatus) { %>
-			<p><strong>Signal:</strong><%=signalStatus.currentSignal%>|<%=signalStatus.timestamp%></p>
+		<% if (signalConst) { %>
+			<p><strong>Signal:</strong><%=signalConst.currentSignal%>|<%=signalConst.timestamp%></p>
 		<% } %>
 		<% if (error) {%>
 			<div style="color:red; margin-top: 10px;"><%=error%></div>
 		<% } %>
-		<%if (success){%>
-			<div style="color: green; margin-top 10px;"><%= success %></div>
+		<%if (successConst){%>
+      <div style="color: green; margin-top: 10px;"><%= successConst %></div>
 		<% } %>
 		<!--update signal status form with input field, traffic light dropdown and submit button-->
 		<h3>Update Traffic Signal</h3>
@@ -130,7 +135,9 @@
 	<!--End RG code-->
   </body>
 
+  
   <script>
+    // start Ivan code
     let eventSource;
   
     function startStreaming() {
@@ -164,6 +171,8 @@
         eventSource.close();
       });
     }
+
+   // end Ivan code 
 
 	//Start RG code
 	//Declare variable
