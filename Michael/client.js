@@ -1,8 +1,14 @@
+/*
+Name: Michael Toomey
+ID: x24127639
+Date: 11/05/2025
+*/
+
 const grpc = require("@grpc/grpc-js"); //imports grpc library 
 const protoLoader = require("@grpc/proto-loader"); //imports the proto file loader
 const PROTO_PATH = "./watermeter.proto"; //the file path
 const packageDefinition = protoLoader.loadSync(PROTO_PATH); //parses .proto file
-const waterMeterProto = grpc.loadPackageDefinition(packageDefinition).watermeter; //create grpc package
+const waterMeterProto = grpc.loadPackageDefinition(packageDefinition).watermeter; //create grpc packageconst
 const client = new waterMeterProto.WaterMeter("localhost:50051", grpc.credentials.createInsecure()); //create a client to the server
 const readline = require("readline").createInterface({ //interface
 	
@@ -56,6 +62,7 @@ function averageReading(input){ //function for the average flow over a number of
 			console.log("The average water level is: ", response.responseWaterMeter);
 		
 		}
+		readline.close();
 	});		
 	const interval = setInterval(() => { //interval sends a random number to server every second
 		
@@ -86,7 +93,7 @@ function averageReading(input){ //function for the average flow over a number of
 	
 }
 function waterMeterLive(input ){ //the bidirectional function
-	
+	let checkLineClosed= false;
 	let i=0; //start counter at zero
 			
 	const call = client.LiveWaterMeterFlow();	 
@@ -109,6 +116,16 @@ function waterMeterLive(input ){ //the bidirectional function
 					
 		}
 	},	1000);
+	
+	const liveReadline = () => {
+		if(!checkLineClosed){
+				
+				readline.close();
+				checkLineClosed = true;
+		}
+	};
+			
+				
 	call.on("end", ()=> //close on end
 	{	
 		console.log("Call end");
@@ -141,7 +158,7 @@ function getUpdates(){ //server streaming, updates sensoer client
 	
 }
 function selectDevice(){ //lets user select device 
-readline.question("Select Device:\nEnter 1 for A1\nEnter 2 for B2\nEnter 3 for C3\nEnter 4 for D4\n", (choice) => { 
+readline.question("Select Device:\nEnter 1 for device A1\nEnter 2 for device B2\nEnter 3 for device C3\nEnter 4 for device D4\nEnter 5 for software updates\nEnter 9 to exit\n", (choice) => { 
 		
 		
 		if(!checkInput(choice)){ //check input
@@ -173,6 +190,12 @@ readline.question("Select Device:\nEnter 1 for A1\nEnter 2 for B2\nEnter 3 for C
 				connect("D4");
 				
 			}
+			else if(num===5){ //get server stream function 
+				
+				getUpdates();
+				readline.close();
+				
+			}		
 			else if(num===9){ //lets user exit 
 				
 				console.log("Exit");
@@ -180,16 +203,17 @@ readline.question("Select Device:\nEnter 1 for A1\nEnter 2 for B2\nEnter 3 for C
 				return;
 			}
 			else{
+				
 				console.log("Try Again");
 				selectDevice();
+				
 			}
 		}		
 					
 	});
 }	
-
 function selectService(){ //simple stream,client stream, server stream bidirectional stream 
-readline.question("\nSELECT SERVICES\nEnter 1 for current flow\nEnter 2 for average flow\nEnter 3 live flow\nEnter 4 for software updates\nEnter 9 to exit\n", (choice) => {
+readline.question("\nSELECT SERVICES\nEnter 1 for current flow\nEnter 2 for average flow\nEnter 3 for live flow updates\nEnter 9 to exit\n", (choice) => {
 	
 	if(checkInput(choice)){ //enter choice of method
 		const num = parseInt(choice); //convert input into integer
@@ -210,6 +234,7 @@ readline.question("\nSELECT SERVICES\nEnter 1 for current flow\nEnter 2 for aver
 						
 					}
 				});
+				
 			}
 			else if(num===3){
 				readline.question("Enter duration of test in seconds: ",(inputDur) => { 
@@ -219,12 +244,7 @@ readline.question("\nSELECT SERVICES\nEnter 1 for current flow\nEnter 2 for aver
 						
 					}
 										
-				});							
-			}
-			else if(num===4){ //get server stream function 
-				
-				getUpdates();
-				readline.close();
+				});	
 				
 			}
 			else if(num===9){

@@ -1,3 +1,9 @@
+/*
+Name: Michael Toomey
+ID: x24127639
+Date: 11/05/2025
+*/
+
 syntax = "proto3"; //defines the protocal framework
 
 package watermeter; // the package for watermeter

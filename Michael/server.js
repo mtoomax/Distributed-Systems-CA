@@ -1,3 +1,9 @@
+/*
+Name: Michael Toomey
+ID: x24127639
+Date: 11/05/2025
+*/
+
 const grpc = require("@grpc/grpc-js"); //imports grpc library
 const protoLoader = require("@grpc/proto-loader"); //imports the proto loader
 const PROTO_PATH = "./watermeter.proto"; // path to the file
@@ -13,16 +19,26 @@ let deviceDetails = [
 ];
 
 
-function softwareUpdates(call){
+function softwareUpdates(call){	 //update all sensors
+	let upDates = [ //the software updates
+	"Update 1","Update 2","Update 3" 
+	];
+	for(let i=0;i<deviceDetails.length;i++){ //connect all devices
+					
+			if(deviceDetails[i].connected==="No"){ //if device not connected, connect it
+			
+				deviceDetails[i].connected="Yes";	
+				
+			}
+			
+	}	
 	
-let upDates = [
-"Update 1","Update 2","Update 3" 
-];
 	for(let i=0; i<upDates.length ; i++){
 		
 		call.write({packets : upDates[i]});
 		
 	}
+	
 	call.end();
 	
 }
@@ -117,7 +133,6 @@ function waterMeterLive(call){ //sends client level reading text every second
 	});
 
 }
-
 const waterMeterService = 
 {WaterMeterNow : readingNow, AverageWaterMeterFlow :averageReading, LiveWaterMeterFlow : waterMeterLive, DiscoverWaterMeter : discoverDevice,SoftwareUpdates : softwareUpdates }; //connects proto methods to functions 
 const server = new grpc.Server(); // a grpc server
